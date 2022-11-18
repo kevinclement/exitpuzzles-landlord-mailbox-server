@@ -1,0 +1,29 @@
+{
+  "name": "landlord-mailbox-server",
+  "version": "0.0.2",
+  "description": "Code the run the control server software for exitpuzzles mailbox",
+  "author": "Kevin Clement <kevin.clement@gmail.com>",
+  "private": true,
+  "scripts": {
+    "dev": "node index.js",
+    "verbose": "DEBUG=true node index.js",
+    "tail": "tail -f /var/log/syslog | grep exitpuzzles-mailbox",
+    "stop": "sudo systemctl stop exitpuzzles.mailbox.service",
+    "start": "sudo systemctl start exitpuzzles.mailbox.service",
+    "restart": "sudo systemctl restart exitpuzzles.mailbox.service",
+    "status": "sudo systemctl status exitpuzzles.mailbox.service"
+  },
+  "dependencies": {
+    "bluetooth-serial-port": "^2.2.6",
+    "escpos": "^2.5.2",
+    "firebase": "^6.4.0",
+    "play-sound": "^1.1.3",
+    "serialport": "^7.1.5",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kevinclement/landlord-mailbox-server.git"
+  }
+}
