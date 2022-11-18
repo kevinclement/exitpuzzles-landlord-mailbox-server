@@ -5,39 +5,37 @@ module.exports = class CoinManager extends Manager {
         let incoming = [];
         let handlers = {};
 
-        let ref = opts.fb.db.ref('museum/devices/zoltar')
+        let ref = opts.fb.db.ref('landlord/devices/mailbox')
 
         super({ 
             ...opts,
             ref: ref,
-            dev:'/dev/ttyCOIN',
-            baudRate: 9600,
+            dev:'/dev/ttyMailbox',
+            baudRate: 115200,
             handlers: handlers,
             incoming:incoming,
         })
-        this.forced = false
-        this.printer = new (require('./printer'))({ logger: opts.logger })
 
         // setup supported commands
-        handlers['zoltar.increment'] = (s,cb) => {
-            this.forced = true
-            this.write('increment', err => {
-                if (err) {
-                    s.ref.update({ 'error': err });
-                }
-                cb()
-            });
-        }
-        handlers['zoltar.decrement'] = (s,cb) => { 
-            this.write('decrement', err => {
-                if (err) {
-                    s.ref.update({ 'error': err });
-                }
-                cb()
-            });
-        }
-        handlers['zoltar.reboot'] = (s,cb) => {
-            this.forced = false
+        // handlers['zoltar.increment'] = (s,cb) => {
+        //     this.forced = true
+        //     this.write('increment', err => {
+        //         if (err) {
+        //             s.ref.update({ 'error': err });
+        //         }
+        //         cb()
+        //     });
+        // }
+        // handlers['zoltar.decrement'] = (s,cb) => { 
+        //     this.write('decrement', err => {
+        //         if (err) {
+        //             s.ref.update({ 'error': err });
+        //         }
+        //         cb()
+        //     });
+        // }
+
+        handlers['mailbox.reboot'] = (s,cb) => {
             this.write('reboot', err => {
                 if (err) {
                     s.ref.update({ 'error': err });
@@ -45,9 +43,8 @@ module.exports = class CoinManager extends Manager {
                 cb()
             });
         }
-        handlers['zoltar.printFeed'] = (s,cb) => {
-            this.printer.feed(cb)
-        }
+
+        // vacuum:off,servo:15,state:WAITING,resetButton:off
 
         // setup supported device output parsing
         incoming.push(
@@ -57,33 +54,24 @@ module.exports = class CoinManager extends Manager {
                 m[1].split(',').forEach((s)=> {
                     let p = s.split(/:(.+)/);
                     switch(p[0]) {
-                        case "version": 
-                            this.version = p[1]
-                            break
-                        case "gitDate": 
-                            this.gitDate = p[1]
-                            break 
-                        case "buildDate": 
-                            this.buildDate = p[1]
-                            break
 
                         case "solved": 
                             this.solved = (p[1] === 'true')
                             break
-                        case "coins": 
-                            let nCoins = parseInt(p[1]);
-                            if (this.coins != nCoins && this.coins < nCoins) {
-                                this.coinChange()
-                            }
-                            this.coins = nCoins
-                            break
-                        case "donations": 
-                            let nDonations = parseInt(p[1])
-                            if (this.donations != nDonations && this.donations < nDonations) {
-                                this.donationChange()
-                            }
-                            this.donations = nDonations
-                            break
+                        // case "coins": 
+                        //     let nCoins = parseInt(p[1]);
+                        //     if (this.coins != nCoins && this.coins < nCoins) {
+                        //         this.coinChange()
+                        //     }
+                        //     this.coins = nCoins
+                        //     break
+                        // case "donations": 
+                        //     let nDonations = parseInt(p[1])
+                        //     if (this.donations != nDonations && this.donations < nDonations) {
+                        //         this.donationChange()
+                        //     }
+                        //     this.donations = nDonations
+                        //     break
                     }
                 })
 
@@ -95,8 +83,8 @@ module.exports = class CoinManager extends Manager {
 
                 ref.update({
                     solved: this.solved,
-                    coins: this.coins,
-                    donations: this.donations
+                    // coins: this.coins,
+                    // donations: this.donations
                 })
             }
         });
