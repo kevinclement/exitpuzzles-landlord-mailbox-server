@@ -3,7 +3,7 @@ let logger = new (require('./logging'))
 let audio = new (require('./audio'))({ logger: logger })
 
 let managers = [];
-// managers.push(new (require('./manager.coin'))({ name: 'zoltar', logger: logger, fb: fb, audio: audio }))
+managers.push(new (require('./manager.mailbox'))({ name: 'mailbox', logger: logger, fb: fb, audio: audio }))
 // managers.push(new (require('./manager.hands'))({ name: 'hands', logger: logger, fb: fb }))
 
 // might want to turn this off while doing dev, so I have a flag for it

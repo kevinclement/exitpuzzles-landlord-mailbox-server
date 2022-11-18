@@ -1,6 +1,6 @@
 let Manager = require('./manager')
 
-module.exports = class CoinManager extends Manager {
+module.exports = class MailboxManager extends Manager {
     constructor(opts) {
         let incoming = [];
         let handlers = {};
@@ -17,26 +17,18 @@ module.exports = class CoinManager extends Manager {
         })
 
         // setup supported commands
-        // handlers['zoltar.increment'] = (s,cb) => {
-        //     this.forced = true
-        //     this.write('increment', err => {
-        //         if (err) {
-        //             s.ref.update({ 'error': err });
-        //         }
-        //         cb()
-        //     });
-        // }
-        // handlers['zoltar.decrement'] = (s,cb) => { 
-        //     this.write('decrement', err => {
-        //         if (err) {
-        //             s.ref.update({ 'error': err });
-        //         }
-        //         cb()
-        //     });
-        // }
 
         handlers['mailbox.reboot'] = (s,cb) => {
             this.write('reboot', err => {
+                if (err) {
+                    s.ref.update({ 'error': err });
+                }
+                cb()
+            });
+        }
+
+        handlers['mailbox.drop'] = (s,cb) => {
+            this.write('t', err => {
                 if (err) {
                     s.ref.update({ 'error': err });
                 }
@@ -95,37 +87,37 @@ module.exports = class CoinManager extends Manager {
         this.version = "unknown"
         this.gitDate = "unknown"
         this.buildDate = "unknown"
-        this.coins = 0
-        this.donations = 0
+        // this.coins = 0
+        // this.donations = 0
 
         // now connect to serial
         this.connect()
     }
 
-    coinChange() {
-        this.logger.log(this.logPrefix + 'detected coin change...')
-        var _solved = this.solved
-        this.play("coin.wav", () => {
-            if (_solved) {
-                this.allCoins()
-            }
-        })
-    }
+    // coinChange() {
+    //     this.logger.log(this.logPrefix + 'detected coin change...')
+    //     var _solved = this.solved
+    //     this.play("coin.wav", () => {
+    //         if (_solved) {
+    //             this.allCoins()
+    //         }
+    //     })
+    // }
 
-    donationChange() {
-        this.logger.log(this.logPrefix + 'detected donation...')
-        this.play(["error.wav", "donation.wav"])
-    }
+    // donationChange() {
+    //     this.logger.log(this.logPrefix + 'detected donation...')
+    //     this.play(["error.wav", "donation.wav"])
+    // }
 
-    allCoins() {
-        this.logger.log(this.logPrefix + 'solved.')
-        this.play("solve-long.wav")
+    // allCoins() {
+    //     this.logger.log(this.logPrefix + 'solved.')
+    //     this.play("solve-long.wav")
 
-        // print after a period of time so the success can play
-        setTimeout(() => {
-            this.printer.print(() => {})
-        },2000)
-    }
+    //     // print after a period of time so the success can play
+    //     setTimeout(() => {
+    //         this.printer.print(() => {})
+    //     },2000)
+    // }
 
     play(fName, cb) {
         this.audio.play(fName, (err) => {
