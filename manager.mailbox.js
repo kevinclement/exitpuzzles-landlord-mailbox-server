@@ -22,8 +22,8 @@ module.exports = class MailboxManager extends Manager {
         });
 
         // setup supported commands
-        handlers['mailbox.reboot']  = (s,cb) => { this.write('reboot',  err => { if (err) { s.ref.update({ 'error': err }); } cb() }); }
-        handlers['mailbox.drop']    = (s,cb) => { this.write('drop',    err => { if (err) { s.ref.update({ 'error': err }); } cb() }); }
+        handlers['mailbox.reset']  = (s,cb) => { this.write('reset',  err => { if (err) { s.ref.update({ 'error': err }); } cb() }); }
+        handlers['mailbox.drop']   = (s,cb) => { this.write('drop',   err => { if (err) { s.ref.update({ 'error': err }); } cb() }); }
 
         // setup supported device output parsing
         incoming.push(
