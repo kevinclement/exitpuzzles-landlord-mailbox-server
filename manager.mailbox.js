@@ -17,7 +17,6 @@ module.exports = class MailboxManager extends Manager {
         })
 
         // setup supported commands
-
         handlers['mailbox.reboot'] = (s,cb) => {
             this.write('reboot', err => {
                 if (err) {
@@ -36,7 +35,10 @@ module.exports = class MailboxManager extends Manager {
             });
         }
 
-        // vacuum:off,servo:15,state:WAITING,resetButton:off
+        // vacuum:off
+        // servo:15
+        // state:WAITING
+        // resetButton:off
 
         // setup supported device output parsing
         incoming.push(
@@ -50,20 +52,6 @@ module.exports = class MailboxManager extends Manager {
                         case "solved": 
                             this.solved = (p[1] === 'true')
                             break
-                        // case "coins": 
-                        //     let nCoins = parseInt(p[1]);
-                        //     if (this.coins != nCoins && this.coins < nCoins) {
-                        //         this.coinChange()
-                        //     }
-                        //     this.coins = nCoins
-                        //     break
-                        // case "donations": 
-                        //     let nDonations = parseInt(p[1])
-                        //     if (this.donations != nDonations && this.donations < nDonations) {
-                        //         this.donationChange()
-                        //     }
-                        //     this.donations = nDonations
-                        //     break
                     }
                 })
 
@@ -75,8 +63,6 @@ module.exports = class MailboxManager extends Manager {
 
                 ref.update({
                     solved: this.solved,
-                    // coins: this.coins,
-                    // donations: this.donations
                 })
             }
         });
@@ -84,46 +70,28 @@ module.exports = class MailboxManager extends Manager {
         this.audio = opts.audio
 
         this.solved = false
+
         this.version = "unknown"
         this.gitDate = "unknown"
         this.buildDate = "unknown"
-        // this.coins = 0
-        // this.donations = 0
 
         // now connect to serial
         this.connect()
     }
-
-    // coinChange() {
-    //     this.logger.log(this.logPrefix + 'detected coin change...')
-    //     var _solved = this.solved
-    //     this.play("coin.wav", () => {
-    //         if (_solved) {
-    //             this.allCoins()
-    //         }
-    //     })
-    // }
-
-    // donationChange() {
-    //     this.logger.log(this.logPrefix + 'detected donation...')
-    //     this.play(["error.wav", "donation.wav"])
-    // }
-
-    // allCoins() {
-    //     this.logger.log(this.logPrefix + 'solved.')
-    //     this.play("solve-long.wav")
-
-    //     // print after a period of time so the success can play
-    //     setTimeout(() => {
-    //         this.printer.print(() => {})
-    //     },2000)
-    // }
 
     play(fName, cb) {
         this.audio.play(fName, (err) => {
             if (cb) {
                 cb()
             }
+        })
+    }
+
+    allSolved() {
+        this.logger.log(this.logPrefix + 'all solved, playing sound...')
+
+        this.play("mail-end.wav", () => {
+            this.logger.log(this.logPrefix + 'audio finished.')
         })
     }
 }
