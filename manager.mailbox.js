@@ -16,29 +16,14 @@ module.exports = class MailboxManager extends Manager {
             incoming:incoming,
         })
 
+        // ask for status once we connect
+        this.on('connected', () => {
+            this.write('status')
+        });
+
         // setup supported commands
-        handlers['mailbox.reboot'] = (s,cb) => {
-            this.write('reboot', err => {
-                if (err) {
-                    s.ref.update({ 'error': err });
-                }
-                cb()
-            });
-        }
-
-        handlers['mailbox.drop'] = (s,cb) => {
-            this.write('t', err => {
-                if (err) {
-                    s.ref.update({ 'error': err });
-                }
-                cb()
-            });
-        }
-
-        // vacuum:off
-        // servo:15
-        // state:WAITING
-        // resetButton:off
+        handlers['mailbox.reboot']  = (s,cb) => { this.write('reboot',  err => { if (err) { s.ref.update({ 'error': err }); } cb() }); }
+        handlers['mailbox.drop']    = (s,cb) => { this.write('drop',    err => { if (err) { s.ref.update({ 'error': err }); } cb() }); }
 
         // setup supported device output parsing
         incoming.push(
@@ -49,8 +34,15 @@ module.exports = class MailboxManager extends Manager {
                     let p = s.split(/:(.+)/);
                     switch(p[0]) {
 
-                        case "solved": 
-                            this.solved = (p[1] === 'true')
+                        case "state": 
+                            let _state = p[1]
+                            if (_state == "DONE" && !this.state != "DONE") {
+                                this.allSolved()
+                            }
+                            this.state = _state
+                            break
+                        case "vacuum":
+                            this.vacuum = (p[1] === 'on')
                             break
                     }
                 })
@@ -62,14 +54,16 @@ module.exports = class MailboxManager extends Manager {
                 })
 
                 ref.update({
-                    solved: this.solved,
+                    state: this.state,
+                    vacuum: this.vacuum,
                 })
             }
         });
 
         this.audio = opts.audio
 
-        this.solved = false
+        this.state = "UNKNOWN"
+        this.vacuum = false
 
         this.version = "unknown"
         this.gitDate = "unknown"
