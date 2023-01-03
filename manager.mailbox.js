@@ -84,7 +84,7 @@ module.exports = class MailboxManager extends Manager {
     allSolved() {
         this.logger.log(this.logPrefix + 'all solved, playing sound...')
 
-        this.play("mail-end.wav", () => {
+        this.play("custom-mail-end-loudness.wav", () => {
             this.logger.log(this.logPrefix + 'audio finished.')
         })
     }
