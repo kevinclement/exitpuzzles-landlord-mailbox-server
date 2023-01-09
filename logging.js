@@ -21,7 +21,7 @@ module.exports = class Logger {
 
     // add firebase logger if asked
     enableFirebase(db, path) {
-        this.logger.add(new WinstonFirebase({ db: db, path:path }))
+        // this.logger.add(new WinstonFirebase({ db: db, path:path }))
     }
 
     log(msg) {
